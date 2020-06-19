@@ -13,8 +13,9 @@ module IterableRails
       message = Message.new(mail)
 
       response = Iterable::Email.new.target(
-        message.to,
+        message.to_email_address,
         campaign_id,
+        attachments: message.attachments,
         dataFields: message.data_fields,
         metadata: message.metadata
       )

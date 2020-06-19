@@ -6,51 +6,112 @@ describe "Delivering messages with iterable-rails" do
   let(:api_key) { "ITERABLE_API_KEY" }
   let(:campaign_id) { 12345678 }
 
-  before do
-    ActionMailer::Base.iterable_settings = { api_key: api_key, campaign_id: campaign_id }
+  before(:each) do
+    stub_request(:post, /api.iterable.com\/api\/email\/target/)
+
+    TestMailer.delivery_method = :iterable
+    TestMailer.iterable_settings = { api_key: api_key, campaign_id: campaign_id }
   end
 
-  it 'delivers a simple message' do
-    message = TestMailer.simple_message
+  it "delivers a simple message" do
+    TestMailer.simple_message.deliver
 
-    message.deliver
+    expect(
+      a_request(:post, /api.iterable.com\/api\/email\/target/).with(
+        query: hash_including(api_key: api_key),
+        body: {
+          "attachments": [],
+          "dataFields": {
+            "bcc_address": nil,
+            "from_email": "sally@example.com",
+            "from_name": "Sally",
+            "html": "hello\n",
+            "subject": "Example Subject",
+            "text": nil,
+          },
+          "metadata": {},
+          "recipientEmail": "david@example.com",
+          "campaignId": campaign_id,
+        }.to_json
+      )
+    ).to have_been_made.once
   end
 
-  it 'delivers a tagged message' do
-    message = TestMailer.tagged_message
+  it "delivers a message with metadata" do
+    TestMailer.message_with_metadata.deliver
 
-    expect { message.deliver }.to change{message.delivered?}.to(true)
+    expect(
+      a_request(:post, /api.iterable.com\/api\/email\/target/).with(
+        query: hash_including(api_key: api_key),
+        body: {
+          "attachments": [],
+          "dataFields": {
+            "bcc_address": nil,
+            "from_email": "sally@example.com",
+            "from_name": "Sally",
+            "html": nil,
+            "subject": "Message with metadata",
+            "text": "This is a message with metadata.\n",
+          },
+          "metadata": {
+            "key": "value"
+          },
+          "recipientEmail": "david@example.com",
+          "campaignId": campaign_id,
+        }.to_json
+      )
+    ).to have_been_made.once
   end
 
-  it 'delivers a multipart message' do
-    message = TestMailer.multipart_message
+  it "delivers a multipart message" do
+    TestMailer.multipart_message.deliver
 
-    expect { message.deliver }.to change{message.delivered?}.to(true)
+    expect(
+      a_request(:post, /api.iterable.com\/api\/email\/target/).with(
+        query: hash_including(api_key: api_key),
+        body: {
+          "attachments": [],
+          "dataFields": {
+            "bcc_address": nil,
+            "from_email": "sally@example.com",
+            "from_name": "Sally",
+            "html": "<b>hello</b>\n",
+            "subject": "Your invitation to join BiggerPockets",
+            "text": "hello\n",
+          },
+          "metadata": {},
+          "recipientEmail": "david@example.com",
+          "campaignId": campaign_id,
+        }.to_json
+      )
+    ).to have_been_made.once
   end
 
-  it 'delivers a message with attachments' do
-    message = TestMailer.message_with_attachment
-    request = message.to_postmark_hash
+  it "delivers a message with attachments" do
+    TestMailer.message_with_attachment.deliver
 
-    expect(request['Attachments'].count).not_to be_zero
-    expect { message.deliver }.to change{message.delivered?}.to(true)
-  end
-
-  it 'delivers a message with inline image' do
-    message = TestMailer.message_with_inline_image
-    request = message.to_postmark_hash
-
-    expect(request['Attachments'].count).not_to be_zero
-    expect(request['Attachments'].first).to have_key('ContentID')
-    expect { message.deliver }.to change{message.delivered?}.to(true)
-  end
-
-  it 'delivers a message with metadata' do
-    message = TestMailer.message_with_metadata
-
-    request = message.to_postmark_hash
-
-    expect(request['Metadata']).to eq('foo' => 'bar')
-    expect { message.deliver }.to change { message.delivered? }.to true
+    expect(
+      a_request(:post, /api.iterable.com\/api\/email\/target/).with(
+        query: hash_including(api_key: api_key),
+        body: {
+          "attachments": [{
+            name: "empty.gif",
+            mimeType: "image/gif",
+            content: "R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==\n"
+          }],
+          "dataFields": {
+            "bcc_address": nil,
+            "from_email": "sally@example.com",
+            "from_name": "Sally",
+            "html": "<p>Attachments!</p>\n",
+            "subject": "Message with attachment",
+            "text": nil,
+          },
+          "metadata": {},
+          "recipientEmail": "david@example.com",
+          "campaignId": campaign_id,
+        }.to_json
+      )
+    ).to have_been_made.once
   end
 end

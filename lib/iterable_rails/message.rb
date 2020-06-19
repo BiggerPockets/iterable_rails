@@ -8,34 +8,6 @@ module IterableRails
       @mail = mail
     end
 
-    def data_fields
-      fields = {
-        bcc_address: bcc_address,
-        from_email: from_email,
-        from_name: from_name,
-        html: html,
-        metadata: metadata,
-        subject: subject,
-        text: text,
-        to: to,
-      }
-
-      fields[:attachments] = attachments if attachments?
-      fields[:images] = images if inline_attachments?
-
-      fields
-    end
-
-    def metadata
-      get_value(:metadata)
-    end
-
-    def to
-      combine_address_fields.reject(&:nil?).flatten
-    end
-
-    private
-
     def attachments
       mail.attachments.map do |attachment|
         {
@@ -45,6 +17,27 @@ module IterableRails
         }
       end
     end
+
+    def data_fields
+      {
+        bcc_address: bcc_address,
+        from_email: from_email,
+        from_name: from_name,
+        html: html,
+        subject: subject,
+        text: text,
+      }
+    end
+
+    def metadata
+      get_value(:metadata) || {}
+    end
+
+    def to_email_address
+      to.address
+    end
+
+    private
 
     def bcc_address
       return_string_value(:bcc_address)
@@ -152,20 +145,16 @@ module IterableRails
       mail[:tags].to_s.split(', ').map { |tag| tag }
     end
 
-    # Returns a single, flattened hash with all to, cc, and bcc addresses
-    def combine_address_fields
-      %w[to cc bcc].map do |field|
-        hash_addresses(mail[field])
-      end
-    end
-
-    # Returns a Mail::Address object using the from field
     def from
       address = mail[:from].formatted
       Mail::Address.new(address.first)
     end
 
-    # rubocop:disable Metrics/AbcSize
+    def to
+      address = mail[:to].formatted
+      Mail::Address.new(address.first)
+    end
+
     def get_value(field)
       if mail[field].respond_to?(:unparsed_value)                     # `mail` gem > 2.7.0
         mail[field].unparsed_value
@@ -173,21 +162,6 @@ module IterableRails
         mail[field].instance_variable_get('@unparsed_value')
       elsif mail[field].instance_variable_defined?('@value')          # `mail` gem < 2.7.0
         mail[field].instance_variable_get('@value')
-      end
-    end
-    # rubocop:enable Metrics/AbcSize
-
-    # Returns a Mandrill API compatible email address hash
-    def hash_addresses(address_field)
-      return nil unless address_field
-
-      address_field.formatted.map do |address|
-        address_obj = Mail::Address.new(address)
-        {
-          email: address_obj.address,
-          name: address_obj.display_name,
-          type: address_field.name.downcase
-        }
       end
     end
 

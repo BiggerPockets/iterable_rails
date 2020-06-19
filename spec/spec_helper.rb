@@ -6,7 +6,6 @@ require "byebug"
 require "iterable_rails"
 require_relative "fixtures/models/test_mailer"
 
-ActionMailer::Base.delivery_method = :iterable
 ActionMailer::Base.prepend_view_path(File.join(File.dirname(__FILE__), "fixtures", "views"))
 
 RSpec.configure do |config|

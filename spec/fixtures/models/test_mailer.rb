@@ -1,22 +1,18 @@
 # frozen_string_literal: true
 
 class TestMailer < ActionMailer::Base
-  default subject: "hello", to: "david@example.com", from: "sally@example.com"
+  default subject: "Example Subject", to: "David <david@example.com>", from: "Sally <sally@example.com>"
 
   def simple_message
     mail
   end
 
-  def tagged_message
-    mail(tag: "delivery")
-  end
-
-  def tracked_message
-    mail(track_opens: "true")
+  def message_with_metadata
+    mail(subject: "Message with metadata", metadata: { key: "value" })
   end
 
   def multipart_message
-    mail(subject: "Your invitation to join BiggerPockets.") do |format|
+    mail(subject: "Your invitation to join BiggerPockets") do |format|
       format.text
       format.html
     end
@@ -24,22 +20,13 @@ class TestMailer < ActionMailer::Base
 
   def message_with_attachment
     attachments["empty.gif"] = File.read(image_file)
-    mail(subject: "Message with attachment.")
-  end
-
-  def message_with_inline_image
-    attachments.inline["empty.gif"] = File.read(image_file)
-    mail(subject: "Message with inline image.")
-  end
-
-  def message_with_metadata
-    metadata["foo"] = "bar"
-    mail(subject: "Message with metadata.")
+    mail(subject: "Message with attachment")
   end
 
   protected
 
   def image_file
-    # File.join(File.dirname(__FILE__), "..", "..", "fixtures", "empty.gif")
+    gem_root = Gem::Specification.find_by_name("iterable_rails").gem_dir
+    File.join(gem_root, "spec", "fixtures", "empty.gif")
   end
 end
