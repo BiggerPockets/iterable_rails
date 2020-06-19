@@ -18,7 +18,26 @@ Or install it yourself as:
 
 ## Usage
 
-TODO: Write usage instructions here
+You'll need to set up a transactional email campaign and template within (Iterable)[https://app.iterable.com]. Note your campaign ID.
+
+Within your Rails application or environment config add these lines:
+
+```rb
+config.action_mailer.delivery_method = :iterable
+config.action_mailer.iterable_settings = {
+    api_key: ENV["ITERABLE_API_KEY"],
+    campaign_id: 12345678
+}
+```
+
+Within Iterable you'll need to configure your template to use the following handlebars data:
+
+- `{{ bcc_address }}`
+- `{{ from_email }}`
+- `{{ from_name }}`
+- `{{ html }}`
+- `{{ subject }}`
+- `{{ text }}`
 
 ## Development
 
