@@ -18,7 +18,7 @@ Or install it yourself as:
 
 ## Usage
 
-You'll need to set up a transactional email campaign and template within (Iterable)[https://app.iterable.com]. Note your campaign ID.
+You'll need to set up a transactional email campaign and template within [Iterable](https://app.iterable.com). Note your campaign ID.
 
 Within your Rails application or environment config add these lines:
 
