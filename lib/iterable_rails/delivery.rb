@@ -20,7 +20,9 @@ module IterableRails
         metadata: message.metadata
       )
 
-      # TODO: error handling
+      unless response.success?
+        raise "Iterable API request failed: #{response.message}"
+      end
     end
 
     private
