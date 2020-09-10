@@ -7,6 +7,10 @@ class TestMailer < ActionMailer::Base
     mail
   end
 
+  def message_with_tracking_id
+    mail(tracking_id: "tracking_id")
+  end
+
   def message_with_metadata
     mail(subject: "Message with metadata", metadata: { key: "value" })
   end

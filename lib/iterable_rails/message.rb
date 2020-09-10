@@ -26,7 +26,11 @@ module IterableRails
         html: html,
         subject: subject,
         text: text,
-      }
+      }.merge(additional_data_fields)
+    end
+
+    def additional_data_fields
+      { tracking_id: get_value(:tracking_id) }.compact
     end
 
     def metadata
