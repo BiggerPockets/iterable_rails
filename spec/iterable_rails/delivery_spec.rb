@@ -139,4 +139,29 @@ describe "Delivering messages with iterable-rails" do
       )
     ).to have_been_made.once
   end
+
+  it "message with extra data fields" do
+    TestMailer.message_with_extra_data_fields.deliver
+
+    expect(
+      a_request(:post, /api.iterable.com\/api\/email\/target/).with(
+        query: hash_including(api_key: api_key),
+        body: {
+          "attachments": [],
+          "dataFields": {
+            "bcc_address": nil,
+            "from_email": "sally@example.com",
+            "from_name": "Sally",
+            "html": "",
+            "subject": "Message with data fields",
+            "text": nil,
+            "key": "value"
+          },
+          "metadata": {},
+          "recipientEmail": "david@example.com",
+          "campaignId": campaign_id,
+        }.to_json
+      )
+    ).to have_been_made.once
+  end
 end

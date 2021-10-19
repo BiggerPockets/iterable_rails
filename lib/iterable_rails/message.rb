@@ -30,7 +30,7 @@ module IterableRails
     end
 
     def additional_data_fields
-      { tracking_id: get_value(:tracking_id) }.compact
+      { tracking_id: get_value(:tracking_id) }.merge(get_value(:data_fields) || {}).compact
     end
 
     def metadata

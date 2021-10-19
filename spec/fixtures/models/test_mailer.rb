@@ -7,6 +7,10 @@ class TestMailer < ActionMailer::Base
     mail
   end
 
+  def message_with_extra_data_fields
+    mail(subject: "Message with data fields", data_fields: { key: "value" })
+  end
+
   def message_with_tracking_id
     mail(tracking_id: "tracking_id")
   end
