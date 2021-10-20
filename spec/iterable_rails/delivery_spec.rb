@@ -164,4 +164,29 @@ describe "Delivering messages with iterable-rails" do
       )
     ).to have_been_made.once
   end
+
+
+  it "message with custom campaign id" do
+    TestMailer.message_with_custom_campaign_id.deliver
+
+    expect(
+      a_request(:post, /api.iterable.com\/api\/email\/target/).with(
+        query: hash_including(api_key: api_key),
+        body: {
+          "attachments": [],
+          "dataFields": {
+            "bcc_address": nil,
+            "from_email": "sally@example.com",
+            "from_name": "Sally",
+            "html": nil,
+            "subject": "Message with custom campaign id",
+            "text": ""
+          },
+          "metadata": {},
+          "recipientEmail": "david@example.com",
+          "campaignId": "98765",
+        }.to_json
+      )
+    ).to have_been_made.once
+  end
 end

@@ -33,6 +33,10 @@ module IterableRails
       { tracking_id: get_value(:tracking_id) }.merge(get_value(:data_fields) || {}).compact
     end
 
+    def campaign_id
+      get_value(:campaign_id)
+    end
+
     def metadata
       get_value(:metadata) || {}
     end

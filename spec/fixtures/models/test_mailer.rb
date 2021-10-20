@@ -31,6 +31,10 @@ class TestMailer < ActionMailer::Base
     mail(subject: "Message with attachment")
   end
 
+  def message_with_custom_campaign_id
+    mail(subject: "Message with custom campaign id", campaign_id: "98765", body: "")
+  end
+
   protected
 
   def image_file

@@ -14,7 +14,7 @@ module IterableRails
 
       response = Iterable::Email.new.target(
         message.to_email_address,
-        campaign_id,
+        message.campaign_id || campaign_id,
         attachments: message.attachments,
         dataFields: message.data_fields,
         metadata: message.metadata

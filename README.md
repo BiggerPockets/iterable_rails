@@ -38,6 +38,7 @@ Within Iterable you'll need to configure your template to use the following hand
 - `{{ html }}`
 - `{{ subject }}`
 - `{{ text }}`
+- `{{ some_extra_data_field }}`
 
 ## Development
 
