@@ -15,6 +15,10 @@ class TestMailer < ActionMailer::Base
     mail(subject: "Message with metadata", metadata: { key: "value" })
   end
 
+  def message_with_bcc(bcc)
+    mail(bcc: bcc)
+  end
+
   def multipart_message
     mail(subject: "Your invitation to join BiggerPockets") do |format|
       format.text

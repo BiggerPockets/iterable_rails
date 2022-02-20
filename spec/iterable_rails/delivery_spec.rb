@@ -139,4 +139,52 @@ describe "Delivering messages with iterable-rails" do
       )
     ).to have_been_made.once
   end
+
+  it "delivers a message with bcc" do
+    TestMailer.message_with_bcc("joe@example.com").deliver
+
+    expect(
+      a_request(:post, /api.iterable.com\/api\/email\/target/).with(
+        query: hash_including(api_key: api_key),
+        body: {
+          "attachments": [],
+          "dataFields": {
+            "bcc_address": "joe@example.com",
+            "from_email": "sally@example.com",
+            "from_name": "Sally",
+            "html": "hello\n",
+            "subject": "Example Subject",
+            "text": nil,
+          },
+          "metadata": {},
+          "recipientEmail": "david@example.com",
+          "campaignId": campaign_id,
+        }.to_json
+      )
+    ).to have_been_made.once
+  end
+
+  it "delivers a message with multiple bccs" do
+    TestMailer.message_with_bcc(["joe@example.com", "jane@example.com"]).deliver
+
+    expect(
+      a_request(:post, /api.iterable.com\/api\/email\/target/).with(
+        query: hash_including(api_key: api_key),
+        body: {
+          "attachments": [],
+          "dataFields": {
+            "bcc_address": "joe@example.com, jane@example.com",
+            "from_email": "sally@example.com",
+            "from_name": "Sally",
+            "html": "hello\n",
+            "subject": "Example Subject",
+            "text": nil,
+          },
+          "metadata": {},
+          "recipientEmail": "david@example.com",
+          "campaignId": campaign_id,
+        }.to_json
+      )
+    ).to have_been_made.once
+  end
 end

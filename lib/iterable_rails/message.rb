@@ -44,7 +44,7 @@ module IterableRails
     private
 
     def bcc_address
-      return_string_value(:bcc_address)
+      return_string_value(:bcc)
     end
 
     def from_email
