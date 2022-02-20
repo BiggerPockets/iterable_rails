@@ -22,6 +22,7 @@ describe "Delivering messages with iterable-rails" do
         body: {
           "attachments": [],
           "dataFields": {
+            "cc_address": nil,
             "bcc_address": nil,
             "from_email": "sally@example.com",
             "from_name": "Sally",
@@ -46,6 +47,7 @@ describe "Delivering messages with iterable-rails" do
         body: {
           "attachments": [],
           "dataFields": {
+            "cc_address": nil,
             "bcc_address": nil,
             "from_email": "sally@example.com",
             "from_name": "Sally",
@@ -71,6 +73,7 @@ describe "Delivering messages with iterable-rails" do
         body: {
           "attachments": [],
           "dataFields": {
+            "cc_address": nil,
             "bcc_address": nil,
             "from_email": "sally@example.com",
             "from_name": "Sally",
@@ -97,6 +100,7 @@ describe "Delivering messages with iterable-rails" do
         body: {
           "attachments": [],
           "dataFields": {
+            "cc_address": nil,
             "bcc_address": nil,
             "from_email": "sally@example.com",
             "from_name": "Sally",
@@ -125,6 +129,7 @@ describe "Delivering messages with iterable-rails" do
             content: "R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==\n"
           }],
           "dataFields": {
+            "cc_address": nil,
             "bcc_address": nil,
             "from_email": "sally@example.com",
             "from_name": "Sally",
@@ -149,6 +154,7 @@ describe "Delivering messages with iterable-rails" do
         body: {
           "attachments": [],
           "dataFields": {
+            "cc_address": nil,
             "bcc_address": "joe@example.com",
             "from_email": "sally@example.com",
             "from_name": "Sally",
@@ -173,7 +179,58 @@ describe "Delivering messages with iterable-rails" do
         body: {
           "attachments": [],
           "dataFields": {
+            "cc_address": nil,
             "bcc_address": "joe@example.com, jane@example.com",
+            "from_email": "sally@example.com",
+            "from_name": "Sally",
+            "html": "hello\n",
+            "subject": "Example Subject",
+            "text": nil,
+          },
+          "metadata": {},
+          "recipientEmail": "david@example.com",
+          "campaignId": campaign_id,
+        }.to_json
+      )
+    ).to have_been_made.once
+  end
+
+  it "delivers a message with cc" do
+    TestMailer.message_with_cc("joe@example.com").deliver
+
+    expect(
+      a_request(:post, /api.iterable.com\/api\/email\/target/).with(
+        query: hash_including(api_key: api_key),
+        body: {
+          "attachments": [],
+          "dataFields": {
+            "cc_address": "joe@example.com",
+            "bcc_address": nil,
+            "from_email": "sally@example.com",
+            "from_name": "Sally",
+            "html": "hello\n",
+            "subject": "Example Subject",
+            "text": nil,
+          },
+          "metadata": {},
+          "recipientEmail": "david@example.com",
+          "campaignId": campaign_id,
+        }.to_json
+      )
+    ).to have_been_made.once
+  end
+
+  it "delivers a message with multiple ccs" do
+    TestMailer.message_with_cc(["joe@example.com", "jane@example.com"]).deliver
+
+    expect(
+      a_request(:post, /api.iterable.com\/api\/email\/target/).with(
+        query: hash_including(api_key: api_key),
+        body: {
+          "attachments": [],
+          "dataFields": {
+            "cc_address": "joe@example.com, jane@example.com",
+            "bcc_address": nil,
             "from_email": "sally@example.com",
             "from_name": "Sally",
             "html": "hello\n",

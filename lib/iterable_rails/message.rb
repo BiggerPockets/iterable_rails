@@ -20,6 +20,7 @@ module IterableRails
 
     def data_fields
       {
+        cc_address: cc_address,
         bcc_address: bcc_address,
         from_email: from_email,
         from_name: from_name,
@@ -42,6 +43,10 @@ module IterableRails
     end
 
     private
+
+    def cc_address
+      return_string_value(:cc)
+    end
 
     def bcc_address
       return_string_value(:bcc)
