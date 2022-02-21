@@ -32,6 +32,7 @@ config.action_mailer.iterable_settings = {
 
 Within Iterable you'll need to configure your template to use the following handlebars data:
 
+- `{{ cc_address }}`
 - `{{ bcc_address }}`
 - `{{ from_email }}`
 - `{{ from_name }}`
